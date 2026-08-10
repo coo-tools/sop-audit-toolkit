@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Audit a standard operating procedure and turn gaps into a prioritized action list." />
+    <title>Process Proof — SOP Audit Toolkit</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header><a href="#">Process Proof</a><span>SOP audit toolkit</span><button id="resetButton">Reset audit</button></header>
+    <main>
+      <section class="hero">
+        <div><p class="eyebrow">PROCESS RELIABILITY</p><h1>Make critical processes easier to trust.</h1><p>Review ownership, documentation, controls, and measurement. The audit converts gaps into a practical improvement list.</p></div>
+        <div class="score-card"><span>Process maturity</span><strong id="auditScore">0</strong><b id="maturityLabel">Ad hoc</b></div>
+      </section>
+      <section id="sectionSummary" class="section-summary"></section>
+      <div class="workspace">
+        <section class="panel"><div class="panel-title"><div><p class="eyebrow">AUDIT CHECKLIST</p><h2>Control review</h2></div><span>Yes = established · Partial = inconsistent · No = missing</span></div><div id="checklist"></div></section>
+        <aside class="panel action-panel"><p class="eyebrow">NEXT ACTIONS</p><h2>Priority improvements</h2><ol id="actions"></ol><button id="exportButton">Export action plan</button></aside>
+      </div>
+    </main>
+    <footer>A lightweight diagnostic, not a substitute for legal, safety, or regulatory review. Data stays in your browser.</footer>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
