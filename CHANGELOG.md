@@ -13,7 +13,7 @@ All notable changes to this project are documented here.
 ### Changed
 
 - Browser persistence now stores checklist answers and audit context together
-- Product preview and acceptance-test documentation now cover the context workflow
+- Acceptance-test documentation now covers the context workflow
 
 ## [1.0.0] - 2026-08-10
 
