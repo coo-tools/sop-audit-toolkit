@@ -20,9 +20,10 @@ A browser-based diagnostic for reviewing the reliability of a standard operating
 ## Features
 
 - Weighted audit score and process-maturity label
+- Audit context for the process name, owner, and review date
 - Section-level scoring
 - Prioritized improvement list based on gap severity
-- Markdown action-plan export
+- Markdown action-plan export with audit context
 - Local browser storage
 - Unit-tested scoring logic
 
@@ -52,7 +53,7 @@ This is a lightweight operational diagnostic. It is not a substitute for a legal
 
 ## Project status
 
-Version 1.0 is a stable, client-side baseline. Planned improvements are tracked in GitHub Issues. Contributions are welcome through [CONTRIBUTING.md](CONTRIBUTING.md).
+Version 1.1 adds persistent audit context to the stable, client-side baseline. Planned improvements are tracked in GitHub Issues. Contributions are welcome through [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
