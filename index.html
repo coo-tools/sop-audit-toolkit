@@ -14,6 +14,14 @@
         <div><p class="eyebrow">PROCESS RELIABILITY</p><h1>Make critical processes easier to trust.</h1><p>Review ownership, documentation, controls, and measurement. The audit converts gaps into a practical improvement list.</p></div>
         <div class="score-card"><span>Process maturity</span><strong id="auditScore">0</strong><b id="maturityLabel">Ad hoc</b></div>
       </section>
+      <section id="auditContext" class="audit-context panel" aria-labelledby="auditContextTitle">
+        <div><p class="eyebrow">AUDIT CONTEXT</p><h2 id="auditContextTitle">Identify this review</h2></div>
+        <div class="context-grid">
+          <label>Process name<input id="processName" data-context-field="processName" type="text" placeholder="e.g. Customer onboarding" /></label>
+          <label>Process owner<input id="processOwner" data-context-field="processOwner" type="text" placeholder="e.g. Operations lead" /></label>
+          <label>Review date<input id="reviewDate" data-context-field="reviewDate" type="date" /></label>
+        </div>
+      </section>
       <section id="sectionSummary" class="section-summary"></section>
       <div class="workspace">
         <section class="panel"><div class="panel-title"><div><p class="eyebrow">AUDIT CHECKLIST</p><h2>Control review</h2></div><span>Yes = established · Partial = inconsistent · No = missing</span></div><div id="checklist"></div></section>
