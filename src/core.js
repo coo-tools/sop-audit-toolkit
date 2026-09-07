@@ -34,3 +34,35 @@ export function maturityLabel(score) {
   if (score >= 40) return "Developing";
   return "Ad hoc";
 }
+
+export function normalizeAuditContext(context = {}) {
+  const clean = (value) => String(value ?? "").trim();
+  return {
+    processName: clean(context.processName),
+    processOwner: clean(context.processOwner),
+    reviewDate: clean(context.reviewDate),
+  };
+}
+
+export function actionPlanMarkdown(items, context = {}) {
+  const normalized = normalizeAuditContext(context);
+  const score = auditScore(items);
+  const actions = priorityActions(items, items.length);
+  const valueOrFallback = (value) => value || "Not specified";
+
+  return [
+    "# SOP Audit Action Plan",
+    "",
+    `Process: ${valueOrFallback(normalized.processName)}`,
+    `Process owner: ${valueOrFallback(normalized.processOwner)}`,
+    `Review date: ${valueOrFallback(normalized.reviewDate)}`,
+    "",
+    `Overall score: ${score}% (${maturityLabel(score)})`,
+    "",
+    "## Priority actions",
+    "",
+    ...(actions.length
+      ? actions.map((item, index) => `${index + 1}. ${item.label} — ${item.section} (${item.status})`)
+      : ["No open actions. Schedule the next review."]),
+  ].join("\n");
+}

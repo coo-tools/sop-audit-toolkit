@@ -1,6 +1,7 @@
-import { auditScore, maturityLabel, priorityActions, sectionScores } from "./src/core.js";
+import { actionPlanMarkdown, auditScore, maturityLabel, priorityActions, sectionScores } from "./src/core.js";
 
-const STORAGE_KEY="process-proof-audit-v1";
+const STORAGE_KEY="process-proof-audit-v2";
+const LEGACY_STORAGE_KEY="process-proof-audit-v1";
 const sampleItems=[
   {id:"owner",section:"Ownership",label:"A single process owner is accountable",detail:"The owner can approve changes and resolve exceptions.",status:"yes",weight:3},
   {id:"backup",section:"Ownership",label:"A trained backup owner is named",detail:"The process does not stop when one person is unavailable.",status:"partial",weight:2},
@@ -15,12 +16,24 @@ const sampleItems=[
   {id:"quality",section:"Measurement",label:"Quality or error rate is monitored",detail:"The team can see whether speed is creating rework.",status:"partial",weight:3},
   {id:"review",section:"Measurement",label:"Performance is reviewed on a cadence",detail:"Results trigger owners, actions, and due dates.",status:"no",weight:2},
 ];
-let items=load();
-function load(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||structuredClone(sampleItems)}catch{return structuredClone(sampleItems)}}
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(items))}
+function defaultContext(){return {processName:"",processOwner:"",reviewDate:new Date().toISOString().slice(0,10)}}
+let {items,context}=load();
+function load(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved&&Array.isArray(saved.items))return {items:saved.items,context:{...defaultContext(),...(saved.context||{})}};
+    const legacy=JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY));
+    if(Array.isArray(legacy))return {items:legacy,context:defaultContext()};
+  }catch{}
+  return {items:structuredClone(sampleItems),context:defaultContext()};
+}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify({items,context}))}
 function escapeHtml(value){const node=document.createElement("span");node.textContent=value;return node.innerHTML}
 
 function render(){
+  document.querySelector("#processName").value=context.processName;
+  document.querySelector("#processOwner").value=context.processOwner;
+  document.querySelector("#reviewDate").value=context.reviewDate;
   const score=auditScore(items);document.querySelector("#auditScore").textContent=score;document.querySelector("#maturityLabel").textContent=maturityLabel(score);
   document.querySelector("#sectionSummary").innerHTML=sectionScores(items).map((section)=>`<article><strong>${section.score}%</strong><span>${escapeHtml(section.section)} · ${section.completed}/${section.total} established</span></article>`).join("");
   const sections=Object.groupBy(items,(item)=>item.section);
@@ -29,7 +42,8 @@ function render(){
   document.querySelector("#actions").innerHTML=actions.length?actions.map((item)=>`<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.section)} · ${item.status==="partial"?"Strengthen current practice":"Create a control"}</span></li>`).join(""):`<li class="empty">No open actions. Schedule the next review.</li>`;
 }
 
+document.querySelector("#auditContext").addEventListener("input",(event)=>{const field=event.target.dataset.contextField;if(!field)return;context={...context,[field]:event.target.value};save()});
 document.querySelector("#checklist").addEventListener("change",(event)=>{const id=event.target.dataset.id;if(!id)return;items=items.map((item)=>item.id===id?{...item,status:event.target.value}:item);save();render()});
-document.querySelector("#resetButton").addEventListener("click",()=>{items=structuredClone(sampleItems);save();render()});
-document.querySelector("#exportButton").addEventListener("click",()=>{const actions=priorityActions(items,items.length);const text=["# SOP Audit Action Plan","",`Overall score: ${auditScore(items)}% (${maturityLabel(auditScore(items))})`,"",...actions.map((item,index)=>`${index+1}. ${item.label} — ${item.section} (${item.status})`)].join("\n");const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([text],{type:"text/markdown"}));link.download="sop-audit-action-plan.md";link.click();URL.revokeObjectURL(link.href)});
+document.querySelector("#resetButton").addEventListener("click",()=>{items=structuredClone(sampleItems);context=defaultContext();save();render()});
+document.querySelector("#exportButton").addEventListener("click",()=>{const text=actionPlanMarkdown(items,context);const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([text],{type:"text/markdown"}));link.download="sop-audit-action-plan.md";link.click();URL.revokeObjectURL(link.href)});
 render();
