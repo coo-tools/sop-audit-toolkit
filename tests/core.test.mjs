@@ -1,6 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { auditScore, sectionScores, priorityActions, maturityLabel } from "../src/core.js";
+import {
+  actionPlanMarkdown,
+  auditScore,
+  maturityLabel,
+  normalizeAuditContext,
+  priorityActions,
+  sectionScores,
+} from "../src/core.js";
 
 const items = [
   { label: "Owner", section: "Ownership", status: "yes", weight: 3 },
@@ -27,4 +34,30 @@ test("maturity labels cover the score range", () => {
   assert.equal(maturityLabel(90), "Controlled");
   assert.equal(maturityLabel(50), "Developing");
   assert.equal(maturityLabel(20), "Ad hoc");
+});
+
+test("audit context trims values for consistent storage", () => {
+  assert.deepEqual(normalizeAuditContext({
+    processName: "  Customer onboarding ",
+    processOwner: " Operations lead  ",
+    reviewDate: "2026-09-07",
+  }), {
+    processName: "Customer onboarding",
+    processOwner: "Operations lead",
+    reviewDate: "2026-09-07",
+  });
+});
+
+test("action plan export includes audit context", () => {
+  const markdown = actionPlanMarkdown(items, {
+    processName: "Customer onboarding",
+    processOwner: "Eugene Nosov",
+    reviewDate: "2026-09-07",
+  });
+
+  assert.match(markdown, /Process: Customer onboarding/);
+  assert.match(markdown, /Process owner: Eugene Nosov/);
+  assert.match(markdown, /Review date: 2026-09-07/);
+  assert.match(markdown, /Overall score: 58% \(Developing\)/);
+  assert.match(markdown, /1\. Version — Documentation \(no\)/);
 });
